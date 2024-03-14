@@ -1,10 +1,6 @@
 package main
 
 import (
-	"errors"
-	"fmt"
-	"io"
-	"net/http"
 	"os"
 )
 
@@ -14,28 +10,29 @@ type Page struct {
 }
 
 func main() {
-	fmt.Println("Hello")
-	http.HandleFunc("/", getRoot)
-	http.HandleFunc("/hello", getHello)
 
-	err := http.ListenAndServe(":3333", nil)
+	// 	fmt.Println("Hello")
+	// 	http.HandleFunc("/", getRoot)
+	// 	http.HandleFunc("/hello", getHello)
 
-	if errors.Is(err, http.ErrServerClosed) {
-		fmt.Printf("Server Closed\n")
-	} else if err != nil {
-		fmt.Printf("error stating server: %s\n", err)
-		os.Exit(1)
-	}
-}
+	// 	err := http.ListenAndServe(":3333", nil)
 
-func getRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("got / request\n")
-	io.WriteString(w, "This is my website\n")
-}
+	// 	if errors.Is(err, http.ErrServerClosed) {
+	// 		fmt.Printf("Server Closed\n")
+	// 	} else if err != nil {
+	// 		fmt.Printf("error stating server: %s\n", err)
+	// 		os.Exit(1)
+	// 	}
+	// }
 
-func getHello(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("got /hello request\n")
-	io.WriteString(w, "Hello, HTTP!\n")
+	// func getRoot(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Printf("got / request\n")
+	// 	io.WriteString(w, "This is my website\n")
+	// }
+
+	// func getHello(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Printf("got /hello request\n")
+	// 	io.WriteString(w, "Hello, HTTP!\n")
 }
 
 func (p *Page) save() error {
@@ -43,8 +40,11 @@ func (p *Page) save() error {
 	return os.WriteFile(filename, p.Body, 0600)
 }
 
-func loadPage(title string) *Page {
+func loadPage(title string) (*Page, error) {
 	filename := title + ".txt"
-	body, _ := os.ReadFile(filename)
-	return &Page{Title: title, Body: body}
+	body, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	return &Page{Title: title, Body: body}, nil
 }
