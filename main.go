@@ -8,6 +8,11 @@ import (
 	"os"
 )
 
+type Page struct {
+	Title string
+	Body  []byte
+}
+
 func main() {
 	fmt.Println("Hello")
 	http.HandleFunc("/", getRoot)
@@ -31,4 +36,9 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 func getHello(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("got /hello request\n")
 	io.WriteString(w, "Hello, HTTP!\n")
+}
+
+func (p *Page) save() error {
+	filename := p.Title + ".txt"
+	return os.WriteFile(filename, p.Body, 0600)
 }
